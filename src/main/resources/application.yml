@@ -1,0 +1,6 @@
+spring:
+  mongodb:
+    uri: mongodb://peter:peter@localhost:27017/chat_app?authSource=admin
+
+server:
+  port: 8088
