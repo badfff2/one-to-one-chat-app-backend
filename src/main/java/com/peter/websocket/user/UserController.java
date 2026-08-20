@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class UserController {
             @Payload User user,
             SimpMessageHeaderAccessor headerAccessor
     ) {
-        headerAccessor.getSessionAttributes().put("username", user.getNickName());
+        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username", user.getNickName());
         userService.saveUser(user);
         return user;
     }
