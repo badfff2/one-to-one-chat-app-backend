@@ -12,17 +12,17 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
     public Optional<String> getChatRoomId(
-            String senderId,
-            String recipientId,
+            String memberOneId,
+            String memberTwoId,
             boolean createNewRoomIfNotExists
     ) {
-        var chatId = canonicalChatId(senderId, recipientId);
+        var chatId = canonicalChatId(memberOneId, memberTwoId);
         return chatRoomRepository
                 .findByChatId(chatId)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
                     if(createNewRoomIfNotExists) {
-                        var created = createChatId(senderId, recipientId);
+                        var created = createChatId(memberOneId, memberTwoId);
                         return Optional.of(created);
                     }
 
@@ -30,25 +30,25 @@ public class ChatRoomService {
                 });
     }
 
-    private String canonicalChatId(String senderId, String recipientId) {
-        if (senderId.compareTo(recipientId) <= 0) {
-            return String.format("%s_%s", senderId, recipientId);
+    private String canonicalChatId(String memberOneId, String memberTwoId) {
+        if (memberOneId.compareTo(memberTwoId) <= 0) {
+            return String.format("%s_%s", memberOneId, memberTwoId);
         } else {
-            return String.format("%s_%s", recipientId, senderId);
+            return String.format("%s_%s", memberTwoId, memberOneId);
         }
     }
 
-    private String createChatId(String senderId, String recipientId) {
-        var chatId = canonicalChatId(senderId, recipientId);
+    private String createChatId(String memberOneId, String memberTwoId) {
+        var chatId = canonicalChatId(memberOneId, memberTwoId);
 
-        String first = senderId.compareTo(recipientId) <= 0 ? senderId : recipientId;
-        String second = senderId.compareTo(recipientId) <= 0 ? recipientId : senderId;
+        String first = memberOneId.compareTo(memberTwoId) <= 0 ? memberOneId : memberTwoId;
+        String second = memberOneId.compareTo(memberTwoId) <= 0 ? memberTwoId : memberOneId;
 
         ChatRoom chatRoom = ChatRoom
                 .builder()
                 .chatId(chatId)
-                .senderId(first)
-                .recipientId(second)
+                .memberOneId(first)
+                .memberTwoId(second)
                 .build();
 
         chatRoomRepository.save(chatRoom);
