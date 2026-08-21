@@ -1,6 +1,5 @@
 package com.peter.websocket.user;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +11,23 @@ public class UserService {
 
     private final UserRepository repository;
 
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         user.setStatus(Status.ONLINE);
-        repository.save(user);
+        return repository.save(user);
+    }
+
+    public User connectUser(User user){
+        User foundUser = findByNickName(user.getNickName());
+        if(foundUser != null){
+            return saveUser(foundUser);
+        }
+        else{
+            return saveUser(user);
+        }
     }
 
     public void disconnect(User user) {
-        var storedUser = repository.findById(user.getNickName()).orElse(null);
+        var storedUser = repository.findByNickName(user.getNickName());
         if (storedUser != null) {
             storedUser.setStatus(Status.OFFLINE);
             repository.save(storedUser);
@@ -28,4 +37,5 @@ public class UserService {
     public List<User> findAllUsers() {
         return repository.findAll();
     }
+    public User findByNickName(String nickName) {return repository.findByNickName(nickName);}
 }
