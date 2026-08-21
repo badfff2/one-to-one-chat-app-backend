@@ -32,7 +32,7 @@ public class WebSocketEventListener {
                 User user = new User();
                 user.setNickName(username);
                 userService.disconnect(user);
-                messagingTemplate.convertAndSend("/user/public", user);
+                messagingTemplate.convertAndSend("/topic/public", user);
                 log.info("User Disconnected : {}", username);
             }
         }
