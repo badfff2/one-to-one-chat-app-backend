@@ -11,11 +11,6 @@ public class UserService {
 
     private final UserRepository repository;
 
-    public User saveUser(User user) {
-        user.setStatus(Status.ONLINE);
-        return repository.save(user);
-    }
-
     public User connectUser(User user){
         User foundUser = findByNickName(user.getNickName());
         if(foundUser != null){
@@ -32,6 +27,11 @@ public class UserService {
             storedUser.setStatus(Status.OFFLINE);
             repository.save(storedUser);
         }
+    }
+
+    public User saveUser(User user) {
+        user.setStatus(Status.ONLINE);
+        return repository.save(user);
     }
 
     public List<User> findAllUsers() {
