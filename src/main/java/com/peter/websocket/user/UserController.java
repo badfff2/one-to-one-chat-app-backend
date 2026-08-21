@@ -21,14 +21,15 @@ public class UserController {
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    // The User only have nickName, fullName and status
     @MessageMapping("/user.connectUser")
     @SendTo("/topic/public")
     public User connectUser(
             @Payload User user,
             SimpMessageHeaderAccessor headerAccessor
     ){
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username", user.getNickName());
         User userInfo = userService.connectUser(user);
+        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("userId", userInfo.getPublicId());
 
         messagingTemplate.convertAndSendToUser(
                 userInfo.getNickName(),
@@ -43,8 +44,7 @@ public class UserController {
     public User disconnectUser(
             @Payload User user
     ) {
-        userService.disconnect(user);
-        return user;
+        return userService.disconnect(user);
     }
 
     @GetMapping("/users")

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -14,23 +15,25 @@ public class UserService {
     public User connectUser(User user){
         User foundUser = findByNickName(user.getNickName());
         if(foundUser != null){
-            return saveUser(foundUser);
+            return saveUser(foundUser, Status.ONLINE);
         }
         else{
-            return saveUser(user);
+            user.setPublicId(UUID.randomUUID().toString());
+            return saveUser(user, Status.ONLINE);
         }
     }
 
-    public void disconnect(User user) {
-        User storedUser = repository.findByNickName(user.getNickName());
+    public User disconnect(User user) {
+        User storedUser = findByPublicId(user.getPublicId());
         if (storedUser != null) {
-            storedUser.setStatus(Status.OFFLINE);
-            repository.save(storedUser);
+            saveUser(storedUser, Status.OFFLINE);
+            return storedUser;
         }
+        return null;
     }
 
-    public User saveUser(User user) {
-        user.setStatus(Status.ONLINE);
+    public User saveUser(User user, Status status) {
+        user.setStatus(status);
         return repository.save(user);
     }
 
@@ -38,4 +41,5 @@ public class UserService {
         return repository.findAll();
     }
     public User findByNickName(String nickName) {return repository.findByNickName(nickName);}
+    public User findByPublicId(String publicId) {return repository.findByPublicId(publicId);}
 }
