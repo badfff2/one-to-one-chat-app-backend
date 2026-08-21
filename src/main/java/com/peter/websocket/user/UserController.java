@@ -18,16 +18,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @MessageMapping("/user.addUser")
-    @SendTo("/topic/public")
-    public User addUser(
-            @Payload User user,
-            SimpMessageHeaderAccessor headerAccessor
-    ) {
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username", user.getNickName());
-        return userService.connectUser(user);
-    }
-
     @MessageMapping("/user.connectUser")
     @SendTo("/topic/public")
     public User connectUser(
@@ -37,7 +27,6 @@ public class UserController {
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username", user.getNickName());
         return userService.connectUser(user);
     }
-
 
     @MessageMapping("/user.disconnectUser")
     @SendTo("/topic/public")
