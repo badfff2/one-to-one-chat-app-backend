@@ -44,7 +44,7 @@ public class UserController {
     public User disconnectUser(
             @Payload User user
     ) {
-        return userService.disconnect(user);
+        return userService.disconnect(user.getPublicId());
     }
 
     @GetMapping("/users")

@@ -1,6 +1,5 @@
 package com.peter.websocket.config;
 
-import com.peter.websocket.chat.ChatMessage;
 import com.peter.websocket.user.User;
 import com.peter.websocket.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +26,14 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         var sessionAttributes = headerAccessor.getSessionAttributes();
         if (Objects.nonNull(sessionAttributes)) {
-            String username = (String) sessionAttributes.get("username");
-            if (Objects.nonNull(username)) {
-                User user = new User();
-                user.setNickName(username);
-                userService.disconnect(user);
-                messagingTemplate.convertAndSend("/topic/public", user);
-                log.info("User Disconnected : {}", username);
+            String userId = (String) sessionAttributes.get("userId");
+            if (Objects.nonNull(userId)) {
+                User disconnectedUser = userService.disconnect(userId);
+
+                if (disconnectedUser != null) {
+                    messagingTemplate.convertAndSend("/topic/public", disconnectedUser);
+                    log.info("User Disconnected : {}", disconnectedUser.getNickName());
+                }
             }
         }
     }

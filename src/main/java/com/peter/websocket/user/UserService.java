@@ -23,8 +23,8 @@ public class UserService {
         }
     }
 
-    public User disconnect(User user) {
-        User storedUser = findByPublicId(user.getPublicId());
+    public User disconnect(String publicId) {
+        User storedUser = findByPublicId(publicId);
         if (storedUser != null) {
             saveUser(storedUser, Status.OFFLINE);
             return storedUser;
