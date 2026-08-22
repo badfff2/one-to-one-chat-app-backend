@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ChatController {
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(), "/queue/messages",
-                new ChatNotification(
+                new ChatMessageResponse(
                         savedMsg.getPublicId(),
                         savedMsg.getChatRoomId(),
                         savedMsg.getSenderId(),
@@ -35,9 +36,22 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}")
-    public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
+    public ResponseEntity<List<ChatMessageResponse>> findChatMessages(@PathVariable String senderId,
                                                               @PathVariable String recipientId) {
-        return ResponseEntity
-                .ok(chatMessageService.findChatMessages(senderId, recipientId));
+
+        List<ChatMessage> chatMessages = chatMessageService.findChatMessages(senderId, recipientId);
+
+        List<ChatMessageResponse> response = chatMessages.stream()
+                .map(msg -> ChatMessageResponse.builder()
+                        .publicId(msg.getPublicId())
+                        .chatRoomId(msg.getChatRoomId())
+                        .senderId(msg.getSenderId())
+                        .recipientId(msg.getRecipientId())
+                        .content(msg.getContent())
+                        .timestamp(msg.getTimestamp())
+                        .build())
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

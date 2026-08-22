@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatNotification {
+public class ChatMessageResponse {
     private String publicId;
     private String chatRoomId;
     private String senderId;
