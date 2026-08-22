@@ -24,7 +24,8 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(), "/queue/messages",
                 new ChatNotification(
-                        savedMsg.getId(),
+                        savedMsg.getPublicId(),
+                        savedMsg.getChatRoomId(),
                         savedMsg.getSenderId(),
                         savedMsg.getRecipientId(),
                         savedMsg.getContent(),

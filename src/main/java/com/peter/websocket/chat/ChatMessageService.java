@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -14,16 +15,18 @@ public class ChatMessageService {
     private final ChatRoomService chatRoomService;
 
     public ChatMessage save(ChatMessage chatMessage) {
-        var chatId = chatRoomService
+        var chatRoomId = chatRoomService
                 .getChatRoomId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
-        chatMessage.setChatId(chatId);
-        repository.save(chatMessage);
-        return chatMessage;
+        chatMessage.setChatRoomId(chatRoomId);
+        if(chatMessage.getPublicId() == null) {
+            chatMessage.setPublicId(UUID.randomUUID().toString());
+        }
+        return repository.save(chatMessage);
     }
 
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
-        var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false);
-        return chatId.map(repository::findByChatId).orElse(new ArrayList<>());
+        var chatRoomId = chatRoomService.getChatRoomId(senderId, recipientId, false);
+        return chatRoomId.map(repository::findByChatRoomId).orElse(new ArrayList<>());
     }
 }
