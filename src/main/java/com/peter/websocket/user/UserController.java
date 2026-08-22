@@ -1,6 +1,5 @@
 package com.peter.websocket.user;
 
-import com.peter.websocket.chat.ChatMessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
