@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,14 @@ public class UserService {
     public List<User> findAllUsers() {
         return repository.findAll();
     }
+
+    public Set<String> findAllPublicIds() {
+        return repository.findAll()
+                .stream()
+                .map(User::getPublicId)
+                .collect(Collectors.toSet());
+    }
+
     public User findByNickName(String nickName) {return repository.findByNickName(nickName);}
     public User findByPublicId(String publicId) {return repository.findByPublicId(publicId);}
 }
