@@ -1,4 +1,7 @@
 package com.peter.websocket.groupchat;
 
-public class GroupChatRepository {
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface GroupChatRepository extends MongoRepository<GroupChat, String> {
+    GroupChat findByRoomId(String roomId);
 }
