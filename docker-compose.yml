@@ -9,10 +9,32 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=peter
       - MONGO_INITDB_ROOT_PASSWORD=peter
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: websocket_app
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - 8088:8088
+    environment:
+      MONGODB_URI: mongodb://peter:peter@mongo:27017/chat_app?authSource=admin
+
   mongo-express:
     image: mongo-express
     container_name: mongo_express
     restart: always
+    depends_on:
+      mongo:
+        condition: service_healthy
     ports:
       - 8081:8081
     environment:
